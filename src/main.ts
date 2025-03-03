@@ -10,7 +10,13 @@ import 'dotenv/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+
+  // Разрешаем запросы с нескольких доменов
+  app.enableCors({
+    origin: ['https://workriseup.website', 'http://localhost:5173'],
+    credentials: true,
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -44,22 +50,15 @@ async function bootstrap() {
     });
     console.log(`✅ Администратор создан: ${adminEmail} / ${adminPassword}`);
   }
+
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   const citiesService = app.get(CitiesService);
   await citiesService.populateCities();
-  app.use(cors()); // Разрешаем запросы с фронта
-  app.enableCors({
-    origin: 'https://workriseup.website',
-    credentials: true,
-  });
 
-  const PORT = process.env.PORT || 3000;
-  // await app.listen(PORT);
-  await app.listen(process.env.PORT || 8000, '0.0.0.0');
-  console.log(
-    `🚀 Server running on http://localhost:${process.env.PORT || 8000}`,
-  );
+  const PORT = process.env.PORT || 8000;
+  await app.listen(PORT, '0.0.0.0');
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 }
 
 bootstrap();
