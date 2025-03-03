@@ -10,12 +10,12 @@ import 'dotenv/config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ✅ Правильная настройка CORS (один раз!)
+  // ✅ Улучшенная настройка CORS
   app.enableCors({
-    origin: 'http://localhost:5173', // Укажи только один домен!
+    origin: ['https://workriseup.website', 'http://localhost:5173'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
 
   app.useGlobalPipes(
@@ -26,7 +26,7 @@ async function bootstrap() {
     }),
   );
 
-  // Создание администратора при запуске
+  // 🔥 Создание администратора при запуске
   const usersService = app.get(UsersService);
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPassword = process.env.ADMIN_PASSWORD;
@@ -36,20 +36,24 @@ async function bootstrap() {
     process.exit(1);
   }
 
-  const adminExists = await usersService.findByEmail(adminEmail);
-  if (!adminExists) {
-    await usersService.createUser({
-      nickname: 'SuperAdmin',
-      email: adminEmail,
-      password: adminPassword,
-      role: 'admin',
-      status: 'active',
-      firstname: 'Admin',
-      lastname: 'Adminov',
-      phone: '+1234567890',
-      city: '67ac996c9ceeb3898eee3197',
-    });
-    console.log(`✅ Администратор создан: ${adminEmail} / ${adminPassword}`);
+  try {
+    const adminExists = await usersService.findByEmail(adminEmail);
+    if (!adminExists) {
+      await usersService.createUser({
+        nickname: 'SuperAdmin',
+        email: adminEmail,
+        password: adminPassword,
+        role: 'admin',
+        status: 'active',
+        firstname: 'Admin',
+        lastname: 'Adminov',
+        phone: '+1234567890',
+        city: '67ac996c9ceeb3898eee3197',
+      });
+      console.log(`✅ Администратор создан: ${adminEmail}`);
+    }
+  } catch (error) {
+    console.error('❌ Ошибка при проверке администратора:', error);
   }
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
