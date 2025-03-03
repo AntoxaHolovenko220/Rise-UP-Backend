@@ -16,6 +16,14 @@ export class FilialsService {
     return this.filialModel.find().exec();
   }
 
+  async getFilial(id: string): Promise<Filial> {
+    const filial = await this.filialModel.findById(id).exec();
+    if (!filial) {
+      throw new NotFoundException(`Filial with id ${id} not found`);
+    }
+    return filial;
+  }
+
   async updateFilial(id: string, name: string): Promise<Filial> {
     const updatedFilial = await this.filialModel
       .findByIdAndUpdate(id, { name }, { new: true })

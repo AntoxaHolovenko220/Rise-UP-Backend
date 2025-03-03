@@ -35,6 +35,11 @@ export class FilialsController {
     return this.filialsService.findAll();
   }
 
+  @Get('filial/:id')
+  async getUser(@Param('id') id: string): Promise<Filial | null> {
+    return this.filialsService.getFilial(id);
+  }
+
   @Patch(':id')
   @UseGuards(AuthGuard)
   async updateFilial(
