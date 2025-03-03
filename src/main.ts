@@ -12,7 +12,7 @@ async function bootstrap() {
 
   // ✅ Правильная настройка CORS (один раз!)
   app.enableCors({
-    origin: ['https://workriseup.website', 'http://localhost:5173'],
+    origin: 'http://localhost:5173', // Укажи только один домен!
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
