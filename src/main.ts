@@ -49,6 +49,10 @@ async function bootstrap() {
   const citiesService = app.get(CitiesService);
   await citiesService.populateCities();
   app.use(cors()); // Разрешаем запросы с фронта
+  app.enableCors({
+    origin: 'https://workriseup.website',
+    credentials: true,
+  });
 
   const PORT = process.env.PORT || 3000;
   // await app.listen(PORT);
