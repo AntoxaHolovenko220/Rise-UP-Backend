@@ -51,8 +51,11 @@ async function bootstrap() {
   app.use(cors()); // Разрешаем запросы с фронта
 
   const PORT = process.env.PORT || 3000;
-  await app.listen(8000, '0.0.0.0');
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  // await app.listen(PORT);
+  await app.listen(process.env.PORT || 8000, '0.0.0.0');
+  console.log(
+    `🚀 Server running on http://localhost:${process.env.PORT || 8000}`,
+  );
 }
 
 bootstrap();
