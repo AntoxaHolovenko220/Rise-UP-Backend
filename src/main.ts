@@ -53,6 +53,13 @@ async function bootstrap() {
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
+  app.enableCors({
+    origin: ['http://localhost:5174', 'https://workriseup.website'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   const citiesService = app.get(CitiesService);
   await citiesService.populateCities();
 
