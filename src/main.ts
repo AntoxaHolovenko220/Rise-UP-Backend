@@ -5,16 +5,21 @@ import { UsersService } from './service/users/users.service';
 import { CitiesService } from './service/cities/cities.service';
 import { join } from 'path';
 import * as express from 'express';
-const cors = require('cors');
 import 'dotenv/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Разрешаем запросы с нескольких доменов
+  // ✅ Правильная настройка CORS (один раз!)
   app.enableCors({
-    origin: ['https://workriseup.website', 'http://localhost:5173'],
+    origin: [
+      'https://workriseup.website',
+      'http://localhost:5173',
+      'http://localhost:5174',
+    ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   app.useGlobalPipes(
@@ -52,13 +57,6 @@ async function bootstrap() {
   }
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
-
-  app.enableCors({
-    origin: ['http://localhost:5174', 'https://workriseup.website'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
 
   const citiesService = app.get(CitiesService);
   await citiesService.populateCities();
