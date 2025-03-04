@@ -24,6 +24,8 @@ export class UsersService {
     createUserDto: any,
     file?: Express.Multer.File,
   ): Promise<User> {
+    console.log('🟢 createUserDto:', createUserDto);
+
     const { password, city, mailto, ...userData } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
     const cityId = new Types.ObjectId(city);
@@ -35,10 +37,14 @@ export class UsersService {
       password: hashedPassword,
       city: cityId,
       img: filePath,
-      ...(createUserDto.telegram ? { telegram: createUserDto.telegram } : {}), // Добавляем только если не null
+      ...(createUserDto.telegram ? { telegram: createUserDto.telegram } : {}),
     });
 
-    console.log(newUser);
+    console.log('🟢 New User Object:', newUser);
+
+    await newUser.save(); // Сохранение в БД
+
+    console.log('✅ User saved:', newUser);
 
     const populatedUser = await this.userModel
       .findById(newUser._id)
