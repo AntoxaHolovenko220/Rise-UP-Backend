@@ -7,9 +7,11 @@ import { join } from 'path';
 import * as express from 'express';
 import { Types } from 'mongoose';
 import 'dotenv/config';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.setGlobalPrefix('api'); // ✅ Добавляем префикс API
 
@@ -19,6 +21,9 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
+
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
 
   app.useGlobalPipes(
     new ValidationPipe({

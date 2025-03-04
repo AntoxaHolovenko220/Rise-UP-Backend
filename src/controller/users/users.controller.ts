@@ -21,10 +21,8 @@ import { AuthGuard } from '../../guards/auth.guard';
 
 // ✅ Конфигурация хранения файлов
 const storage = diskStorage({
-  destination: './uploads',
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
+  destination: function (req, file, cb) {
+    cb(null, '/home/ubuntu/Rise-UP-Backend/uploads'); // Убедитесь, что путь совпадает
   },
 });
 
