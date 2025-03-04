@@ -34,14 +34,14 @@ export class UsersController {
 
   @Post('create')
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('img', { storage })) // ✅ Подключаем загрузку файлов
+  @UseInterceptors(FileInterceptor('img', { storage }))
   async register(
     @Body() createUserDto: any,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File | undefined, // Указываем, что файл может быть undefined
     @Req() req,
   ): Promise<User> {
     console.log('Received body:', createUserDto);
-    console.log('Uploaded file:', file);
+    console.log('Uploaded file:', file ? file.filename : 'No file uploaded'); // Улучшенное логирование
     console.log('User role:', req.user.role);
 
     if (req.user.role !== 'admin') {
