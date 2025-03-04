@@ -18,11 +18,22 @@ import { extname } from 'path';
 import { UsersService } from '../../service/users/users.service';
 import { User } from '../../schemas/user.schema';
 import { AuthGuard } from '../../guards/auth.guard';
+const fs = require('fs');
 
 // ✅ Конфигурация хранения файлов
 const storage = diskStorage({
   destination: function (req, file, cb) {
-    cb(null, '/home/ubuntu/Rise-UP-Backend/uploads'); // Убедитесь, что путь совпадает
+    const uploadPath = '/home/ubuntu/Rise-UP-Backend/uploads';
+
+    // Создаём папку, если её нет
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 
