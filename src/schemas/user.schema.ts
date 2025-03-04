@@ -36,16 +36,16 @@ export class User {
   @Prop({ type: Types.ObjectId, ref: 'City', required: true })
   city: Types.ObjectId | City;
 
-  @Prop({ unique: true })
+  @Prop()
   mailto: string;
 
-  @Prop({ unique: true })
+  @Prop()
   telegram: string;
 
-  @Prop({ unique: true })
+  @Prop()
   whatsapp: string;
 
-  @Prop({ unique: true })
+  @Prop()
   facebook: string;
 
   @Prop()

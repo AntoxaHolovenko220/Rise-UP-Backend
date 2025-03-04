@@ -30,12 +30,12 @@ export class UsersService {
 
     const filePath = file ? `/uploads/${file.filename}` : null;
 
-    const newUser = await this.userModel.create({
+    const newUser = new this.userModel({
       ...userData,
       password: hashedPassword,
       city: cityId,
       img: filePath,
-      mailto: mailto || userData.email,
+      ...(createUserDto.telegram ? { telegram: createUserDto.telegram } : {}), // Добавляем только если не null
     });
 
     const populatedUser = await this.userModel
