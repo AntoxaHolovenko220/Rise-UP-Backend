@@ -38,6 +38,8 @@ export class UsersService {
       ...(createUserDto.telegram ? { telegram: createUserDto.telegram } : {}), // Добавляем только если не null
     });
 
+    console.log(newUser);
+
     const populatedUser = await this.userModel
       .findById(newUser._id)
       .populate('city')
