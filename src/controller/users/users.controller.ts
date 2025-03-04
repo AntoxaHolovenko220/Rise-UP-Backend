@@ -40,6 +40,10 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req,
   ): Promise<User> {
+    console.log('Received body:', createUserDto);
+    console.log('Uploaded file:', file);
+    console.log('User role:', req.user.role);
+
     if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Only admin can create users');
     }
