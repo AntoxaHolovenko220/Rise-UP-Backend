@@ -5,12 +5,14 @@ import { UsersService } from './service/users/users.service';
 import { CitiesService } from './service/cities/cities.service';
 import { join } from 'path';
 import * as express from 'express';
+import { Types } from 'mongoose';
 import 'dotenv/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ✅ Улучшенная настройка CORS
+  app.setGlobalPrefix('api'); // ✅ Добавляем префикс API
+
   app.enableCors({
     origin: ['https://workriseup.website', 'http://localhost:5173'],
     credentials: true,
@@ -26,7 +28,7 @@ async function bootstrap() {
     }),
   );
 
-  // 🔥 Создание администратора при запуске
+  // ✅ Проверяем переменные окружения
   const usersService = app.get(UsersService);
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPassword = process.env.ADMIN_PASSWORD;
@@ -48,7 +50,7 @@ async function bootstrap() {
         firstname: 'Admin',
         lastname: 'Adminov',
         phone: '+1234567890',
-        city: '67ac996c9ceeb3898eee3197',
+        city: new Types.ObjectId('67ac996c9ceeb3898eee3197'),
       });
       console.log(`✅ Администратор создан: ${adminEmail}`);
     }
@@ -59,7 +61,7 @@ async function bootstrap() {
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   const citiesService = app.get(CitiesService);
-  await citiesService.populateCities();
+  await citiesService.populateCities(); // Оставь, если нужно
 
   const PORT = process.env.PORT || 8000;
   await app.listen(PORT, '0.0.0.0');
