@@ -39,7 +39,7 @@ export class User {
   @Prop()
   mailto: string;
 
-  @Prop()
+  @Prop({ unique: true, sparse: true })
   telegram: string;
 
   @Prop()
