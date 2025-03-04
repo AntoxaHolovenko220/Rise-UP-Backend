@@ -37,17 +37,22 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('img', { storage }))
   async register(
     @Body() createUserDto: any,
-    @UploadedFile() file: Express.Multer.File | undefined, // Указываем, что файл может быть undefined
+    @UploadedFile() file: Express.Multer.File | undefined,
     @Req() req,
   ): Promise<User> {
-    console.log('Received body:', createUserDto);
-    console.log('Uploaded file:', file ? file.filename : 'No file uploaded'); // Улучшенное логирование
-    console.log('User role:', req.user.role);
+    console.log('📥 Данные запроса:', createUserDto);
+    console.log('📂 Файл загружен:', file ? file.filename : 'Файл не загружен');
 
     if (req.user.role !== 'admin') {
-      throw new UnauthorizedException('Only admin can create users');
+      throw new UnauthorizedException(
+        'Только админ может создавать пользователей',
+      );
     }
-    return this.usersService.createUser(createUserDto, file);
+
+    const user = await this.usersService.createUser(createUserDto, file);
+    console.log('✅ Пользователь создан:', user);
+
+    return user;
   }
 
   @Get()

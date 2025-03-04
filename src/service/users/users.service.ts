@@ -25,6 +25,10 @@ export class UsersService {
     file?: Express.Multer.File,
   ): Promise<User> {
     console.log('🟢 createUserDto:', createUserDto);
+    console.log(
+      '📂 Загруженный файл:',
+      file ? file.filename : 'Файл не загружен',
+    );
 
     const { password, city, ...userData } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -40,18 +44,9 @@ export class UsersService {
     });
 
     await newUser.save();
+    console.log('✅ Пользователь сохранён:', newUser);
 
-    console.log('✅ User saved:', newUser);
-
-    // 🔵 Пробуем получить пользователя сразу после сохранения
-    const foundUser = await this.userModel
-      .findById(newUser._id)
-      .populate('city')
-      .exec();
-    console.log('🔵 Found User after save:', foundUser);
-
-    // ❗️ Вместо выброса ошибки просто возвращаем пользователя
-    return foundUser || newUser;
+    return newUser;
   }
 
   async findAll(): Promise<User[]> {
