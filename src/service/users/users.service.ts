@@ -26,7 +26,7 @@ export class UsersService {
   ): Promise<User> {
     console.log('🟢 createUserDto:', createUserDto);
 
-    const { password, city, mailto, ...userData } = createUserDto;
+    const { password, city, ...userData } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
     const cityId = new Types.ObjectId(city);
 
@@ -37,24 +37,21 @@ export class UsersService {
       password: hashedPassword,
       city: cityId,
       img: filePath,
-      ...(createUserDto.telegram ? { telegram: createUserDto.telegram } : {}),
     });
 
-    console.log('🟢 New User Object:', newUser);
-
-    await newUser.save(); // Сохранение в БД
+    await newUser.save();
 
     console.log('✅ User saved:', newUser);
 
-    const populatedUser = await this.userModel
+    // 🔵 Пробуем получить пользователя сразу после сохранения
+    const foundUser = await this.userModel
       .findById(newUser._id)
       .populate('city')
       .exec();
-    if (!populatedUser) {
-      throw new NotFoundException('User not found after creation');
-    }
+    console.log('🔵 Found User after save:', foundUser);
 
-    return populatedUser;
+    // ❗️ Вместо выброса ошибки просто возвращаем пользователя
+    return foundUser || newUser;
   }
 
   async findAll(): Promise<User[]> {
