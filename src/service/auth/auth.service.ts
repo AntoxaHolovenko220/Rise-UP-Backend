@@ -3,6 +3,7 @@ import {
   Injectable,
   forwardRef,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -15,13 +16,23 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(email: string, userPassword: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const { password, ...result } = user;
-      return result;
+    if (!user) {
+      throw new UnauthorizedException('Invalid email or password');
     }
-    throw new UnauthorizedException('Invalid email or password');
+
+    const isPasswordValid = await bcrypt.compare(userPassword, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    if (user.status === 'inactive') {
+      throw new ForbiddenException('Access denied: Your account is inactive.');
+    }
+
+    const { password: _, ...result } = user; // Переименовываем password в _ и исключаем его
+    return result;
   }
 
   async login(user: any) {
